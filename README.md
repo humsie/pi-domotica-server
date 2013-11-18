@@ -1,4 +1,4 @@
 pi-domotica-server
 ==================
 
-Raspberry pi Domotica Server
+Raspberry Pi Domotica Server
