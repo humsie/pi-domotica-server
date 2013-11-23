@@ -1,0 +1,11 @@
+CircuitsOnline
+http://www.circuitsonline.net/forum/view/115048
+
+Nodo
+https://code.google.com/p/arduino-nodo/issues/detail?id=33
+https://code.google.com/p/arduino-nodo/issues/attachmentText?id=33&aid=1076664673169665292&name=kaku+new.txt&token=yJNSvWLm1CTO_tmc-V7fzzuAAGQ%3A1384772476276
+    => new_protocol.txt
+
+TellDus
+http://developer.telldus.se/browser/telldus-core/service/ProtocolNexa.cpp
+    => ProtocolNexa.cpp

@@ -1,0 +1,89 @@
+Source: https://code.google.com/p/arduino-nodo/issues/attachmentText?id=33&aid=1076664673169665292&name=kaku+new.txt&token=yJNSvWLm1CTO_tmc-V7fzzuAAGQ%3A1384772476276
+
+Klik Aan Klik Uit Protocol New
+==============================
+
+'0' bit:
+      ____                      ____
+     |    |                    |    |
+     |    |                    |    |
+ ____|    |____________________|    |
+
+|<-->|<-->|<------------------>|<-->|
+   T    T           5T            T
+
+'1' bit:
+                      ____      ____
+                     |    |    |    |
+                     |    |    |    |
+ ____________________|    |____|    |
+
+|<------------------>|<-->|<-->|<-->|
+          5T            T    T    T
+
+'START/SYNC' bit (Note! Longer than the data bit):
+ ____                                          ____
+|    |                                        |    |
+|    |                                        |    |
+|    |________________________________________|    |
+
+|<-->|<-------------------------------------->|<-->|
+   T                     10T                     T
+
+
+
+
+//**************************************************?
+// 'X' (OPEN) bit:
+//  ____              ____________
+// |    |            |            |
+// |    |            |            |
+// |    |____________|            |____
+//
+// |<-->|<---------->|<---------->|<-->|
+//    T       3T            3T       T
+//**************************************************?
+
+
+If the time T is 244us, one data bit time is 8 T; 1.9ms.
+
+Packet format
+-------------
+Each packet is made up of trinary bits preceded by a start/sync bit.
+Packets are sent n*4 times or more.
+
+If we call the 32 data bits b0..b31 where b0 is sent first, they will have the
+following meaning:
+
+b0..b25 (26 bits) - House (address)
+67 million different addresses
+
+b26 (1 bit) - Group
+0 - 0
+1 - 1
+
+b27 (1 bit) - Action
+0 - OFF
+1 - ON
+
+b28..b31 (4 bits) - Code
+0000 - 1
+0001 - 2
+0010 - 3
+0011 - 4
+0100 - 5
+0101 - 6
+0110 - 7
+0111 - 8
+1000 - 9
+1001 - 10
+1010 - 11
+1011 - 12
+1100 - 13
+1101 - 14
+1110 - 15
+1111 - 16
+
+Revision History
+----------------
+2010-03-10   Ralph van Nellestijn   Created
