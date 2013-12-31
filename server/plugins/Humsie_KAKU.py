@@ -20,21 +20,29 @@ class Humsie_KAKU:
         print "init Kaku"
 
     def receive(self, message):
-        print "message_received: %s" % (message);
         parts = message.split(":")
-#        subprocess.call( [ 'kaku', parts[0], parts[1], parts[2] ] );
         on = False
         if (parts[2] == 'on'):
             on = True
 
+        self.sendOldSignal(parts[0], int(parts[1]), on)
 
-        self.send(self.encodeMessage(self.makeOldSignal(parts[0], int(parts[1]), on), 375, 1))
+    def sendOldSignal(self, address, device, on):
+
+        #Address (string)   : A-P
+        #Device  (integer)  : 0-16
+        #On      (boolean)  : True|False
+
+        # send signal for kaku receivers not starting with A (address set by 2 codedials)
+        self.send(self.encodeMessage(self.makeOldSignal(address, device, on), 375, 1))
 
 
     def send(self, message):
+        # Send message
 
         periodusec = message >> 23;
 
+        # seconds to microseconds
         periodusec = periodusec / 1000000.0;
 
         repeat = 5 << ((message >> 20) & 7)
@@ -42,7 +50,7 @@ class Humsie_KAKU:
         # truncate to 20 bit
         message = message & 0xfffff
 
-        #	//Convert the base3-code to base4, to avoid lengthy calculations when transmitting.. Messes op timings.
+        # Convert the base3-code to base4-code
         dataBase4 = 0;
 
         for i in range(0, 12):
@@ -50,6 +58,7 @@ class Humsie_KAKU:
             dataBase4 = dataBase4 | (message % 3)
             message = message / 3
 
+        # Send signal "repeat" times
         for loop in range(0, repeat):
 
             sendData = dataBase4
@@ -106,8 +115,9 @@ class Humsie_KAKU:
 
         # Encode data
         for i in trits:
+            #print "i: %i %i \n" % (i, trits[i])
             message = message * 3;
-            message = message + trits[i];
+            message = message + i;
 
         # Encode period duration
         message = message | periodusec;
@@ -119,6 +129,7 @@ class Humsie_KAKU:
 
     def makeOldSignal(self, address, device, on):
 
+        # Set base to 0
         trits = [0,0,0, 0,0,0, 0,0,0, 0,0,0]
 
         address = ord(address) - 65;
@@ -147,3 +158,32 @@ class Humsie_KAKU:
             trits[11] = 2
 
         return trits
+
+    def test(self):
+
+        addresses = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"]
+        devices = range(1, 17)
+
+        for a in addresses:
+            for d in devices:
+                result = self.encodeMessage(self.makeOldSignal(a, d, True), 375, 3);
+
+                output,error = subprocess.Popen(
+                    [ '/home/humsie/pi-domotica-server/lights/kaku_encode', a, str(d), "on" ],
+                    stdout = subprocess.PIPE,
+                    stderr= subprocess.PIPE
+                ).communicate()
+
+                if str(result) == str(output):
+                    test = "pass"
+                else:
+                    test = "fail"
+
+                print "%s %s On: %s ( %s  %s )" % (a, d, test, result, output);
+
+if __name__ == '__main__':
+    print "Testing Humsie_KAKU"
+    Humsie_KAKU = Humsie_KAKU("")
+    Humsie_KAKU.test()
+    Humsie_KAKU.sendOldSignal("A", 6, False);
+    Humsie_KAKU.sendOldSignal("A", 6, True);
